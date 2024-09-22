@@ -1,0 +1,76 @@
+// Клас Менеджер сховищ
+// для управління підключеннями до різних сховищ
+class StorageManager {
+    // Поле для зберігання екземпляра Одинака
+    private static instance: StorageManager
+    
+    // Приватний конструктор, щоб запобігти створенню нових екземплярів
+    private constructor() {}
+
+    // Метод для отримання екземпляра класу Одинака
+    public static getInstance(): StorageManager {
+        if (StorageManager.instance == null) {
+            StorageManager.instance = new StorageManager()
+        }
+        return StorageManager.instance
+    }
+
+    // Метод для отримання переліку сховищ
+    public getAvailableStorages(): List<string> {
+        // Повертає список доступних сховищ
+    }
+
+    // Метод для підключення користувача до обраного сховища
+    public connectToStorage(userId: int, storageType: string): void {
+        // Логіка вибору і підключення до сховища
+    }    
+}
+
+// Клас локального сховища
+class LocalStorage {
+    // Метод для збереження файлу
+    public saveFile(file: File): void {
+        // Логіка збереження файлу
+    }
+
+    // Метод для завантаження файлу
+    public loadFile(fileName: string): File {
+        // Логіка завантаження файлу
+    }
+}
+
+// Клас сховища Amazon S3
+class S3Storage {
+    // Метод для збереження файлу
+    public saveFile(file: File): void {
+        // Логіка збереження файлу
+    }
+
+    // Метод для завантаження файлу
+    public loadFile(fileName: string): File {
+        // Логіка завантаження файлу
+    }
+}
+
+// Клас користувача
+// для збереження і завантаження файлів
+class User {
+    private id: int
+    private name: string
+    private storage: any // Обране сховище
+
+    // Метод для вибору сховища
+    public setStorage(storageType: string): void {
+        this.storage = StorageManager.getInstance().connectToStorage(this.id, storageType)
+    }
+
+    // Метод для збереження файлу
+    public saveFile(file: File): void {
+        this.storage.saveFile(file)
+    }
+
+    // Метод для завантаження файлу
+    public loadFile(fileName: string): File {
+        return this.storage.loadFile(fileName)
+    }
+}
