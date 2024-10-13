@@ -1,0 +1,114 @@
+// Загальний інтерфейс для всіх QueryBuilder
+// оголошує методи реалізовані в кожному конкретному будівельнику для створення SQL-запитів
+interface QueryBuilder {
+    // Метод для вибору колонок у запиті SELECT
+    method select(columns)
+    
+    // Метод для додавання умов у запит WHERE
+    method where(condition)
+    
+    // Метод для обмеження кількості результатів через LIMIT
+    method limit(number)
+    
+    // Метод для отримання остаточного SQL-запиту у вигляді рядка
+    method getSQL()
+}
+
+// Реалізація для PostgreSQL
+// реалізує всі методи, необхідні для побудови запиту в PostgreSQL
+class PostgreSQLQueryBuilder implements QueryBuilder {
+    private query = ""  // Змінна для зберігання SQL-запиту, що будується
+    
+    // Метод для створення частини запиту з вибором колонок (SELECT)
+    method select(columns) {
+        // Приєднуємо до запиту частину з вибором колонок (наприклад, "SELECT id, name")
+        this.query += "SELECT " + columns.join(", ") + " "
+    }
+    
+    // Метод для додавання умови WHERE
+    method where(condition) {
+        // Додаємо до запиту умову (наприклад, "WHERE age > 18")
+        this.query += "WHERE " + condition + " "
+    }
+    
+    // Метод для обмеження кількості результатів
+    method limit(number) {
+        // Додаємо до запиту обмеження кількості записів (наприклад, "LIMIT 10")
+        this.query += "LIMIT " + number.toString() + " "
+    }
+    
+    // Метод для повернення остаточного SQL-запиту
+    method getSQL() {
+        // Повертаємо побудований запит як рядок і додаємо ";" в кінці
+        return this.query + ";"
+    }
+}
+
+// Реалізація для MySQL
+// реалізує методи для MySQL
+class MySQLQueryBuilder implements QueryBuilder {
+    private query = ""  // Змінна для зберігання SQL-запиту, що будується
+    
+    // Метод для створення частини запиту з вибором колонок (SELECT)
+    method select(columns) {
+        // Приєднуємо до запиту частину з вибором колонок (наприклад, "SELECT id, name")
+        this.query += "SELECT " + columns.join(", ") + " "
+    }
+    
+    // Метод для додавання умови WHERE
+    method where(condition) {
+        // Додаємо до запиту умову (наприклад, "WHERE age > 18")
+        this.query += "WHERE " + condition + " "
+    }
+    
+    // Метод для обмеження кількості результатів
+    method limit(number) {
+        // Додаємо до запиту обмеження кількості записів (наприклад, "LIMIT 10")
+        this.query += "LIMIT " + number.toString() + " "
+    }
+    
+    // Метод для повернення остаточного SQL-запиту
+    method getSQL() {
+        // Повертаємо побудований запит як рядок і додаємо ";" в кінці
+        return this.query + ";"
+    }
+}
+
+// Директор, який керує процесом побудови запиту
+// визначає порядок виклику методів будівельника для створення запитів
+class QueryDirector {
+    private builder: QueryBuilder  // Змінна для зберігання поточного будівельника
+    
+    // Метод для встановлення конкретного будівельника (PostgreSQL або MySQL)
+    method setBuilder(builder: QueryBuilder) {
+        this.builder = builder  // Прив'язуємо переданий будівельник до директора
+    }
+    
+    // Метод для побудови простого SQL-запиту
+    // визначає, що запит повинен складатися з вибору всіх колонок, умови та обмеження
+    method constructSimpleQuery() {
+        this.builder.select(["*"])  // Викликаємо метод select для вибору всіх колонок
+        this.builder.where("id = 1")  // Додаємо умову, де id дорівнює 1
+        this.builder.limit(1)  // Додаємо обмеження, що потрібно тільки один результат
+    }
+}
+
+// Приклад клієнтського коду
+// демонструє, як використовувати директора з різними будівельниками
+function main() {
+    director = new QueryDirector()  // Створюємо екземпляр директора
+
+    // Робота з PostgreSQL
+    postgresBuilder = new PostgreSQLQueryBuilder()  // Створюємо будівельника для PostgreSQL
+    director.setBuilder(postgresBuilder)  // Передаємо будівельника директору
+    director.constructSimpleQuery()  // Конструюємо простий запит
+    print("PostgreSQL Query: " + postgresBuilder.getSQL())  // Виводимо готовий запит
+
+    // Робота з MySQL
+    mysqlBuilder = new MySQLQueryBuilder()  // Створюємо будівельника для MySQL
+    director.setBuilder(mysqlBuilder)  // Передаємо будівельника директору
+    director.constructSimpleQuery()  // Конструюємо простий запит
+    print("MySQL Query: " + mysqlBuilder.getSQL())  // Виводимо готовий запит
+}
+
+main()
