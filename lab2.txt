@@ -1,0 +1,104 @@
+// Інтерфейс для соціальних мереж
+// визначає спільні методи, які повинні реалізовувати всі соцмережі
+interface SocialNetwork {
+    // Метод для входу в соцмережу
+    // Приймає об'єкт з даними для аутентифікації
+    method login(credentials)
+
+    // Метод для публікації повідомлення
+    // приймає текст повідомлення
+    method postMessage(message)
+}
+
+// Клас для реалізації соцмережі Facebook
+// реалізує всі методи, визначені в інтерфейсі SocialNetwork
+class Facebook implements SocialNetwork {
+    method login(credentials) {
+        print("Logged in to Facebook with login and password.")
+    }
+
+    method postMessage(message) {
+        print("Posted on Facebook: " + message)
+    }
+}
+
+// Клас для реалізації соцмережі LinkedIn
+class LinkedIn implements SocialNetwork {
+    method login(credentials) {
+        print("Logged in to LinkedIn with email and password.")
+    }
+
+    method postMessage(message) {
+        print("Posted on LinkedIn: " + message)
+    }
+}
+
+// Абстрактний клас фабрики соціальних мереж
+// визначає метод createNetwork(), який має повертати об'єкт соцмережі
+// конкретні фабрики реалізують цей метод відповідно до конкретної платформи
+abstract class SocialNetworkFactory {
+    // Абстрактний метод створення об'єкта соцмережі
+    // повертає екземпляр, який реалізує інтерфейс SocialNetwork
+    abstract method createNetwork(): SocialNetwork
+}
+
+// Конкретна фабрика для створення об'єкта Facebook
+// реалізує метод createNetwork(), повертаючи об'єкт Facebook
+class FacebookFactory extends SocialNetworkFactory {
+    method createNetwork(): SocialNetwork {
+        return new Facebook()
+    }
+}
+
+// Конкретна фабрика для створення об'єкта LinkedIn
+// реалізує метод createNetwork(), повертаючи об'єкт LinkedIn
+class LinkedInFactory extends SocialNetworkFactory {
+    method createNetwork(): SocialNetwork {
+        return new LinkedIn()
+    }
+}
+
+// Основний клас, який виконує публікацію в соцмережах
+// використовує фабрику для створення об'єктів різних соцмереж
+class SocialMediaApp {
+    // Поле для зберігання фабрики, яка буде використовуватись для роботи
+    field factory: SocialNetworkFactory
+
+    // Метод для встановлення фабрики, яка визначає, з якою платформою працювати
+    method setFactory(factory: SocialNetworkFactory) {
+        this.factory = factory
+    }
+
+    // Метод для публікації повідомлення через вибрану соцмережу
+    // спочатку виконується аутентифікація, потім публікація повідомлення
+    method publish(credentials, message) {
+        // Створюємо об'єкт соцмережі через фабричний метод
+        network = this.factory.createNetwork()
+
+        // Виконуємо вхід до соцмережі
+        network.login(credentials)
+
+        // Публікуємо повідомлення
+        network.postMessage(message)
+    }
+}
+
+// Основний метод програми, який демонструє роботу Фабричного методу
+method main() {
+    // Створюємо об'єкт нашої програми
+    app = new SocialMediaApp()
+
+    // Публікація на Facebook
+    print("Publishing to Facebook...")
+    // Встановлюємо фабрику для роботи з Facebook
+    app.setFactory(new FacebookFactory())
+    // Виконуємо публікацію через Facebook
+    app.publish({"login": "user", "password": "pass"}, "Hello, Facebook!")
+
+    // Публікація на LinkedIn
+    print("Publishing to LinkedIn...")
+    // Встановлюємо фабрику для роботи з LinkedIn
+    app.setFactory(new LinkedInFactory())
+    // Виконуємо публікацію через LinkedIn
+    app.publish({"email": "user@example.com", "password": "pass"}, "Hello, LinkedIn!")
+}
