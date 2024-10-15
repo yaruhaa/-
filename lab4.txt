@@ -1,0 +1,87 @@
+<?php
+
+interface Notification
+{
+    public function send(string $title, string $message);
+}
+
+// Існуючий клас для відправки email-сповіщень
+class EmailNotification implements Notification
+{
+    private $adminEmail;
+
+    public function __construct(string $adminEmail)
+    {
+        $this->adminEmail = $adminEmail;
+    }
+
+    public function send(string $title, string $message): void
+    {
+        mail($this->adminEmail, $title, $message);
+	echo "Sent email with title '$title' to '{$this->adminEmail}' that says '$message'.";
+    }
+}
+
+// Адаптер для відправки повідомлень через Slack
+class SlackNotificationAdapter implements Notification
+{
+    private $slackService;  // Сервіс Slack для авторизації і відправки
+    private $chatId;  // Чат, куди надсилатиметься повідомлення
+
+    // Конструктор приймає об'єкт SlackService і chatId
+    public function __construct(SlackService $slackService, string $chatId)
+    {
+        $this->slackService = $slackService;
+        $this->chatId = $chatId;
+    }
+
+    // Метод для відправки повідомлення через Slack
+    // авторизація відбувається через об'єкт SlackService
+    public function send(string $title, string $message): void
+    {
+        $this->slackService->login();  // авторизація
+        $this->slackService->sendMessage($this->chatId, "$title - $message");  // відправка повідомлення
+        echo "Sent Slack message to chat '$this->chatId' with title '$title' and message '$message'.";
+    }
+}
+
+// Адаптер для відправки повідомлень через SMS
+class SMSNotificationAdapter implements Notification
+{
+    private $phone;
+    private $sender;
+
+    // Конструктор приймає номер телефону та ім'я відправника
+    public function __construct(string $phone, string $sender)
+    {
+        $this->phone = $phone;
+        $this->sender = $sender;
+    }
+
+    // Метод для відправки SMS
+    // відправка SMS без зміни інтерфейсу Notification
+    public function send(string $title, string $message): void
+    {
+        // Використовуємо API для відправки SMS
+        echo "Sent SMS to {$this->phone} from '{$this->sender}' with title '$title' and message '$message'.";
+    }
+}
+
+// Клієнтський код для використання адаптерів
+function main()
+{
+    // Використання EmailNotification
+    $emailNotification = new EmailNotification("admin@example.com");
+    $emailNotification->send("Server Down", "The server is not responding.");
+
+    // Використання адаптера для Slack
+    $slackService = new SlackService("login", "apiKey");
+    $slackNotification = new SlackNotificationAdapter($slackService, "general");
+    $slackNotification->send("Server Down", "The server is not responding.");
+
+    // Використання адаптера для SMS
+    $smsNotification = new SMSNotificationAdapter("+123456789", "ServerAdmin");
+    $smsNotification->send("Server Down", "The server is not responding.");
+}
+
+main();
