@@ -1,0 +1,63 @@
+// Загальний інтерфейс для соціальних мереж
+interface SocialNetworkConnector {
+    method login(username, password)
+    method post(message)
+}
+
+// Реалізація підключення до Facebook
+class FacebookConnector implements SocialNetworkConnector {
+    method login(username, password) {
+        // Авторизація через username і password
+    }
+
+    method post(message) {
+        // Публікація повідомлення у Facebook
+    }
+}
+
+// Реалізація підключення до LinkedIn
+class LinkedInConnector implements SocialNetworkConnector {
+    method login(email, password) {
+        // Авторизація через email і password
+    }
+
+    method post(message) {
+        // Публікація повідомлення у LinkedIn
+    }
+}
+
+// Фабричний клас для створення підключень
+abstract class SocialNetworkPublisher {
+    // Фабричний метод
+    abstract method createConnector(): SocialNetworkConnector
+
+    // Загальний алгоритм публікації
+    method publish(message) {
+        connector = this.createConnector()
+        connector.login("user", "password")
+        connector.post(message)
+    }
+}
+
+// Конкретна фабрика для Facebook
+class FacebookPublisher extends SocialNetworkPublisher {
+    method createConnector(): SocialNetworkConnector {
+        return new FacebookConnector()
+    }
+}
+
+// Конкретна фабрика для LinkedIn
+class LinkedInPublisher extends SocialNetworkPublisher {
+    method createConnector(): SocialNetworkConnector {
+        return new LinkedInConnector()
+    }
+}
+
+// Приклад використання
+method main() {
+    facebookPublisher = new FacebookPublisher()
+    facebookPublisher.publish("Hello, Facebook!")
+
+    linkedInPublisher = new LinkedInPublisher()
+    linkedInPublisher.publish("Hello, LinkedIn!")
+}
