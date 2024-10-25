@@ -1,0 +1,62 @@
+// Абстракція сторінки
+class Page {
+    protected Renderer renderer
+
+    constructor(renderer: Renderer)
+        this.renderer = renderer
+
+    method view()
+        return this.renderer.render(this.content())
+
+    method content() 
+        // Реалізується в підкласах
+}
+
+// Конкретна сторінка - Проста сторінка
+class SimplePage extends Page {
+    protected title: string
+    protected content: string
+
+    method content()
+        return "Title: " + this.title + ", Content: " + this.content
+}
+
+// Конкретна сторінка - Сторінка товару
+class ProductPage extends Page {
+    protected product: Product
+
+    method content()
+        return "Product: " + this.product.name + ", Description: " + this.product.description
+}
+
+// Інтерфейс поданнів
+interface Renderer {
+    method render(content: string)
+}
+
+// Конкретне подання - HTML
+class HTMLRenderer implements Renderer {
+    method render(content: string)
+        return "<html><body>" + content + "</body></html>"
+}
+
+// Конкретне подання - JSON
+class JsonRenderer implements Renderer {
+    method render(content: string)
+        return "{ 'content': '" + content + "' }"
+}
+
+// Конкретне подання - XML
+class XmlRenderer implements Renderer {
+    method render(content: string)
+        return "<xml><content>" + content + "</content></xml>"
+}
+
+// Клієнтський код
+renderer = new HTMLRenderer()
+page = new SimplePage(renderer)
+page.view()
+
+renderer = new JsonRenderer()
+page = new ProductPage(renderer)
+page.view()
