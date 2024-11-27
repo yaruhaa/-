@@ -1,0 +1,46 @@
+//забезпечує однаковий контракт для всіх реалізацій
+interface Downloader
+    method download(url: String): File
+
+//виконує реальне завантаження
+class SimpleDownloader implements Downloader
+    method download(url: String): File
+        // логіка завантаження файлу з вказаного URL
+        return File
+
+//кешує результати завантаження без змін у SimpleDownloader
+class CachedDownloader implements Downloader
+    private field realDownloader: Downloader
+    private field cache: Map<String, File>
+
+    constructor CachedDownloader(realDownloader: Downloader)
+        this.realDownloader = realDownloader
+        this.cache = new Map()
+
+    method download(url: String): File
+        if cache.containsKey(url)
+            // якщо файл є у кеші то повертає його
+            return cache.get(url)
+        else
+            // якщо нема то завантажує через реальний завантажувач
+            file = realDownloader.download(url)
+            cache.put(url, file)
+            return file
+
+//використання об'єкта замісника
+class Client
+    method main()
+        // cтворити реальний завантажувач
+        downloader = new SimpleDownloader()
+        
+        // обгорнути його у замісник
+        cachedDownloader = new CachedDownloader(downloader)
+
+        // завантажити файл
+        //перше завантаження через SimpleDownloader
+        file1 = cachedDownloader.download("http://example.com/file1")
+        print("First download completed.")
+
+        // повторне завантаження того ж файлу з кешу
+        file2 = cachedDownloader.download("http://example.com/file1")
+        print("Second download completed (from cache).")
